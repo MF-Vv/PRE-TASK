@@ -1,5 +1,5 @@
 # Uses node version 20 as our base image
-FROM node:20
+FROM node:20-alpine
 
 # Goes to the app directory
 WORKDIR /app
