@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  backend:
+    build: ./backend-app
+    ports:
+      - "5000:5000"
+    networks:
+      - devops-network
+
+  frontend:
+    build: ./frontend-app
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_BACKEND_URL=http://backend:5000
+    networks:
+      - devops-network
+
+networks:
+  devops-network:
