@@ -19,22 +19,22 @@ pipeline {
         
        stage('Build Docker Image - Backend') {
             steps {
-                bat "dir"
-                bat "docker build -t munfung/backend-api:1.0 ./backend-app"
+                sh "dir"
+                sh "docker build -t munfung/backend-api:1.0 ./backend-app"
             }
         }
         
         stage('Build Docker Image - Frontend') {
             steps {
-                bat "dir"
-                bat "docker build -t munfung/frontend-app:1.0 ./frontend-app"
+                sh "dir"
+                sh "docker build -t munfung/frontend-app:1.0 ./frontend-app"
             }
         }
         
         stage('Login to Docker Hub') {
             steps {
                  withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                    sh "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
                 }
                 
             }
@@ -43,8 +43,8 @@ pipeline {
         stage('Push Image To Hub - Frontend & Backend') {
             steps {
                 
-                bat "docker push munfung/backend-api:1.0"
-                bat "docker push munfung/frontend-app:1.0"
+                sh "docker push munfung/backend-api:1.0"
+                sh "docker push munfung/frontend-app:1.0"
             }
         }
     }
