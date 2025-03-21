@@ -1,22 +1,28 @@
 version: "3.8"
+
 services:
   backend:
-    image: munfung/backend-api:latest # Use the latest pushed image
+    image: munfung/backend-api:latest
+    container_name: backend-container
     ports:
       - "5000:5000"
+    environment:
+      - NODE_ENV=production
+    restart: always
     networks:
-      - devops-network
+      - app-network
 
   frontend:
     image: munfung/frontend-app:latest
+    container_name: frontend-container
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - backend
-    environment:
-      - VITE_BACKEND_URL=http://backend:5000 # Uses internal network
+    restart: always
     networks:
-      - devops-network
+      - app-network
 
 networks:
-  devops-network:
+  app-network:
+    driver: bridge
