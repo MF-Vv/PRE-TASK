@@ -9,6 +9,10 @@ pipeline {
         IMAGE_VERSION = "${env.BUILD_NUMBER}"  // Auto-incrementing build number
         BACKEND_IMAGE = "munfung/backend-api"
         FRONTEND_IMAGE = "munfung/frontend-app"
+        BACKEND_CONTAINER = "backend-container"
+        FRONTEND_CONTAINER = "frontend-container"
+        BACKEND_PORT = "5000"
+        FRONTEND_PORT = "80"
     }
 
     stages {
@@ -38,7 +42,8 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                    // sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+                    sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                 }
             }
         }
@@ -54,12 +59,19 @@ pipeline {
 
         stage('Deploy Containers') {
             steps {
-                sh "docker stop backend-container || true && docker rm backend-container || true"
-                sh "docker stop frontend-container || true && docker rm frontend-container || true"
+                sh "docker stop ${BACKEND_CONTAINER} || true && docker rm ${BACKEND_CONTAINER} || true"
+                sh "docker stop ${FRONTEND_CONTAINER} || true && docker rm ${FRONTEND_CONTAINER} || true"
                 
-                sh "docker run -d --name backend-container -p 5000:5000 ${BACKEND_IMAGE}:${IMAGE_VERSION}"
-                sh "docker run -d --name frontend-container -p 80:80 ${FRONTEND_IMAGE}:${IMAGE_VERSION}"
+                sh "docker run -d --name ${BACKEND_CONTAINER} -p ${BACKEND_PORT}:${BACKEND_PORT} ${BACKEND_IMAGE}:${IMAGE_VERSION}"
+                sh "docker run -d --name ${FRONTEND_CONTAINER} -p ${FRONTEND_PORT}:${FRONTEND_PORT} ${FRONTEND_IMAGE}:${IMAGE_VERSION}"
             }
         }
+
+        stage('Clean Up Old Docker Images') {
+             steps {
+                sh "docker system prune -af"
+            }
+        }
+
     }
 }
