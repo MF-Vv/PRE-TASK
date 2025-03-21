@@ -19,7 +19,7 @@ onMounted(async () => {
   <div
     class="min-h-screen flex flex-col items-center justify-center bg-blue-500 text-white text-2xl"
   >
-    <h2>Hello, DevOps CI/CDD</h2>
+    <h2>Hello, DevOps CI/CDDd</h2>
     <p>Message: {{ message }}</p>
   </div>
 </template>
