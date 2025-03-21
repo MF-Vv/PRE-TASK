@@ -56,23 +56,23 @@ pipeline {
             }
         }
 
-        // stage('Deploy Containers') {
-        //     steps {
-        //         sh "docker stop ${BACKEND_CONTAINER} || true && docker rm ${BACKEND_CONTAINER} || true"
-        //         sh "docker stop ${FRONTEND_CONTAINER} || true && docker rm ${FRONTEND_CONTAINER} || true"
-                
-        //         sh "docker run -d --name ${BACKEND_CONTAINER} -p ${BACKEND_PORT}:${BACKEND_PORT} ${BACKEND_IMAGE}:${IMAGE_VERSION}"
-        //         sh "docker run -d --name ${FRONTEND_CONTAINER} -p ${FRONTEND_PORT}:${FRONTEND_PORT} ${FRONTEND_IMAGE}:${IMAGE_VERSION}"
-        //     }
-        // }
-
-        stage('Deploy with Docker Compose') {
+        stage('Deploy Containers') {
             steps {
-                sh "docker-compose down || true"  // Stop existing containers if running
-                sh "docker-compose pull"  // Pull latest images from Docker Hub
-                sh "docker-compose up -d --build"  // Start containers in detached mode
+                sh "docker stop ${BACKEND_CONTAINER} || true && docker rm ${BACKEND_CONTAINER} || true"
+                sh "docker stop ${FRONTEND_CONTAINER} || true && docker rm ${FRONTEND_CONTAINER} || true"
+                
+                sh "docker run -d --name ${BACKEND_CONTAINER} -p ${BACKEND_PORT}:${BACKEND_PORT} ${BACKEND_IMAGE}:${IMAGE_VERSION}"
+                sh "docker run -d --name ${FRONTEND_CONTAINER} -p ${FRONTEND_PORT}:${FRONTEND_PORT} ${FRONTEND_IMAGE}:${IMAGE_VERSION}"
             }
         }
+
+        // stage('Deploy with Docker Compose') {
+        //     steps {
+        //         sh "docker-compose down || true"  // Stop existing containers if running
+        //         sh "docker-compose pull"  // Pull latest images from Docker Hub
+        //         sh "docker-compose up -d --build"  // Start containers in detached mode
+        //     }
+        // }
 
         stage('Clean Up Old Docker Images') {
              steps {
@@ -80,5 +80,17 @@ pipeline {
             }
         }
 
+    }
+
+    post {
+        always {
+            echo "Pipeline completed."
+        }
+        success {
+            echo "Deployment successful!"
+        }
+        failure {
+            echo "Deployment failed! Check logs."
+        }
     }
 }
