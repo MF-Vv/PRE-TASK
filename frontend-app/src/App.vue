@@ -8,6 +8,7 @@ onMounted(async () => {
   try {
     const response = await axios.get('http://159.223.78.177:5000') // Update with your backend URL
     message.value = response.data.message
+    console.log(message.value)
   } catch (error) {
     console.error('Error fetching data:', error)
   }
